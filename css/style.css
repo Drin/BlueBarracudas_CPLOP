@@ -1,0 +1,112 @@
+/* global */
+body {
+   /*background-color: #6EA6CA;*/
+   /*background-color: #183043;*/
+   background-color: #ffffff;
+   /*color: #6EA6CA;*/
+   color: #000000;
+}
+/*
+body a {
+   font-weight: bold;
+}
+body a:link {
+   color: #9999ff;
+}
+body a:visited {
+   color: #881280;
+}
+body a:hover {
+   color: default;
+}
+   */
+/* Sortable tables */
+table.sortable thead {
+    background-color:#eee;
+    color:#666666;
+    font-weight: bold;
+    cursor: default;
+}
+
+ul{border:0; margin:0; padding:0;}
+
+#pagination li{
+border:0; margin:0; padding:0;
+font-size:11px;
+list-style:none;
+}
+
+#pagination a{
+border:solid 1px #DDDDDD;
+margin-right:2px;
+}
+
+#pagination .previous-off,
+#pagination .next-off {
+color:#666666;
+display:block;
+float:left;
+font-weight:bold;
+padding:3px 4px;
+}
+
+#pagination .next a,
+#pagination .previous a {
+font-weight:bold;
+border:solid 1px #FFFFFF;
+}
+ 
+#pagination .active{
+color:#ff0084;
+font-weight:bold;
+display:block;
+float:left;
+padding:4px 6px;
+}
+
+#pagination a:link,
+#pagination a:visited {
+color:#0063e3;
+display:block;
+float:left;
+padding:3px 6px;
+text-decoration:none;
+}
+
+#pagination a:hover {
+   border:solid 1px #666666;
+}
+
+#topmenu {
+   text-align: center;
+   margin: 0;
+   width: 100%;
+}
+#topmenu ul {
+   text-align: center;
+   font-size: 1.2em;
+   line-height: 2.5em;
+}
+#topmenu li {
+   display: inline;
+   padding:12px 10px 10px 10px;
+   margin: 0 1px 0 1px;
+   /*background-color: #5870a3;*/
+   background-color: #6096cd;
+}
+#topmenu li > a {
+   display: inline;
+   font-weight: 500;
+   /*background-color: #5870a3;*/
+   background-color: #6096cd;
+   color: #fff;
+   text-decoration: none;
+}
+#topmenu li > a:hover {text-decoration:underline;}
+#topmenu li > a.active {border-color:#98bf21; border-style:solid; border-width:5px;}
+#topmenu li > a.active:hover {padding:12px 8px 10px 8px;}
+
+#colorKey .A {width:20px; height:20px; background-color:green;}
+#colorKey .C {width:20px; height:20px; background-color:blue;}
+#colorKey .G {width:20px; height:20px; background-color:red;}
+#colorKey .T {width:20px; height:20px; background-color:black;}

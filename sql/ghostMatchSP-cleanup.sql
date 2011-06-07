@@ -1,0 +1,9 @@
+DROP PROCEDURE IF EXISTS calcGhostMeanStdDev;
+DROP PROCEDURE IF EXISTS ghost_calculate;
+
+DROP PROCEDURE IF EXISTS ghost_getStats;
+DROP FUNCTION IF EXISTS ghost_pearsonMatch;
+
+/*
+DROP PROCEDURE IF EXISTS closestSpecies
+*/

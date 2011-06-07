@@ -1,0 +1,49 @@
+#stock_header {
+   width: 100%;
+   text-align: center;
+   margin: 0;
+}
+#isolate_filter #filter_params,
+#isolate_results table {
+   margin: 0 auto 0 auto;
+   border: 2px solid black;
+   border-radius: 6px;
+   -moz-border-radius: 6px;
+   border-style: solid;
+   border-color: #000000;
+   text-align: right;
+   /*color: #00509A;*/
+   color: #000000;
+   font-weight: bold;
+   /*background-color: #5870a3;*/
+   background-color: #000000;
+}
+#isolate_filter #filter_params tr:nth-child(even),
+#isolate_results table tr:nth-child(even) {
+	background-color: #5870A3;
+}
+#isolate_filter #filter_params tr:nth-child(odd),
+#isolate_results table tr:nth-child(odd) {
+	background-color: #BFD5E8;
+}
+#isolate_filter #filter_params th {
+    background-color: #6096cd;
+    color: #ffffff;
+}
+#isolate_filter #filter_params > span {
+   text-align: left;
+}
+#isolate_filter #filter_params span.param_label {
+   float: left;
+   width: 180px;
+   line-height: 1px;
+   margin: 12px 0 0 0;
+}
+#isolate_filter #filter_params #wide_label {
+   width: 190px;
+}
+.isolate_controls,
+#isolate_results table,
+#isolate_filter #filter_params thead {
+   text-align: center;
+}

@@ -1,0 +1,17 @@
+#comparisonTable #tableOptions .hidden,
+#comparisonTable #compTable .hidden {
+   display: none;
+}
+
+#comparisonTable #tableOptions .shown,
+#comparisonTable #compTable .shown {
+   display: inline;
+}
+
+#comparisonTable td {
+   cursor: pointer;
+}
+
+#comparisonTable td:first-child, th {
+   cursor: default;
+}

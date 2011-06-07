@@ -1,0 +1,75 @@
+#pyrogram_header {
+   width: 100%;
+   text-align: center;
+   margin: 0;
+}
+#pyrogram_filter #protocol_tbl {
+   display: none;
+}
+#pyrogram_filter #protocol_menu table {
+   width: 615px;
+   padding: 0;
+}
+#pyrogram_filter #protocol_menu th a, p {
+   display: inline;
+}
+#pyrogram_filter #protocol_menu table thead {
+   display: block;
+}
+#pyrogram_filter #protocol_menu table tbody {
+   display: block;
+   width: 590px;
+   height: 140px;
+}
+#pyrogram_filter #quality_indicator {
+   text-align: center;
+}
+#pyrogram_filter #filter_params,
+#pyrogram_filter #protocol_menu table,
+#pyro_results table {
+   margin: 0 auto 0 auto;
+   border: 2px solid black;
+   border-radius: 6px;
+   -moz-border-radius: 6px;
+   text-align: right;
+   /*color: #00509A;*/
+   color: #000;
+   font-weight: bold;
+   /*background-color: #5870a3;*/
+   background-color: #000;
+}
+#pyro_results table {
+   text-align: center;
+}
+#pyrogram_filter #filter_params tr:nth-child(even),
+#pyrogram_filter #protocol_menu table tr:nth-child(even),
+#pyro_results table tr:nth-child(even) {
+	background-color: #5870A3;
+}
+#pyrogram_filter #filter_params tr:nth-child(odd),
+#pyrogram_filter #protocol_menu table tr:nth-child(odd),
+#pyro_results table tr:nth-child(odd) {
+	background-color: #BFD5E8;
+}
+#pyrogram_filter #filter_params span,
+#pyrogram_filter #protocol_menu table span {
+   text-align: left;
+}
+#pyrogram_filter #filter_params span.param_label,
+#pyrogram_filter #protocol_menu table span.param_label {
+   float: left;
+   width: 210px;
+   margin: 4px 0 0 0;
+}
+#pyrogram_filter #protocol_menu table span.param_label {
+   width: 250px;
+}
+#pyrogram_filter #filter_params span.param_input,
+#pyrogram_filter #protocol_menu table span.param_input {
+   float: right;
+   width: 190px;
+}
+.pyro_controls,
+#pyro_results {
+   text-align: center;
+}
