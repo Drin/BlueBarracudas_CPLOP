@@ -93,11 +93,12 @@ CREATE TABLE IF NOT EXISTS compensation_slope(
    FOREIGN KEY (pyrogram_num) REFERENCES pyrogram(pyrogram_num),
    PRIMARY KEY(`level`, position, pyrogram_num));
 
+--changed for new CPLOP
 CREATE TABLE IF NOT EXISTS pyro_stats(
-   pyrogram_num INT NOT NULL UNIQUE,
+   pyroID INT NOT NULL UNIQUE,
    mean FLOAT NOT NULL,
    std_dev FLOAT NOT NULL,
-   FOREIGN KEY(pyrogram_num) REFERENCES pyrogram(pyrogram_num));
+   FOREIGN KEY(pyroID) REFERENCES Pyropints(pyroID));
 
 -- Extra tables for ghost matching. Should prevent unnecessary collisions
 
