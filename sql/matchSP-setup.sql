@@ -50,63 +50,43 @@ BEGIN
    SET stdDev = SQRT(runningStdDev / count);
 END$$
 
-CREATE PROCEDURE calculate(IN xmlFile VARCHAR(150))
-COMMENT 'CALC mean and std_dev for every pyro assigned to the given xmlFile.'
+CREATE PROCEDURE calculate(IN pyroID int(11))
+COMMENT 'CALC mean and std_dev for the given pyroprint ID.'
 BEGIN
-   DECLARE num INT;
-   DECLARE done INT DEFAULT 0;
    DECLARE mean, stdDev FLOAT;
 
-   DECLARE pyroNum CURSOR FOR
-      SELECT pyroID
-      FROM Pyroprints p JOIN (SELECT DISTINCT pyroID FROM Histograms) h USING(pyroID)
-      WHERE fileName = xmlFile;
-   DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+   CALL calcMeanStdDev(pyroID, mean, stdDev);
 
-   OPEN pyroNum;
-   
-   numLoop: LOOP
-      FETCH pyroNum INTO num;
-
-      IF done THEN
-         LEAVE numLoop;
-      END IF;
-
-      CALL calcMeanStdDev(num, mean, stdDev);
-
-      REPLACE INTO pyro_stats VALUES(num, mean, stdDev);
-   END LOOP;
-
-   CLOSE pyroNum;
+   REPLACE INTO pyro_stats VALUES(pyroID, mean, stdDev);
 END$$
 
-CREATE PROCEDURE calcAllFiles()
-COMMENT 'This calculates pyro_stats for each distinct xml file in Pyroprints'
+CREATE PROCEDURE preprocessPyroprints()
+COMMENT 'This calculates pyro_stats for each Pyroprint'
 BEGIN
-   DECLARE xmlFile varchar(150);
+   DECLARE pyroNum int(11);
    DECLARE done INT DEFAULT 0;
 
-   DECLARE pyroFile CURSOR FOR
-      SELECT distinct fileName
-      FROM Pyroprints;
+   DECLARE pyroNums CURSOR FOR
+      SELECT p.pyroID
+      FROM Pyroprints p JOIN Histograms h using (pyroID)
+      WHERE p.pyroID NOT IN (SELECT pyroID from pyro_stats);
    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
-   OPEN pyroFile;
+   OPEN pyroNums;
 
-   fileLoop: LOOP
-      FETCH pyroFile INTO xmlFile;
+   pyroprintLoop: LOOP
+      FETCH pyroNums INTO pyroNum;
 
       IF done THEN
-         LEAVE fileLoop;
+         LEAVE pyroprintLoop;
       END IF;
 
-      CALL calculate(xmlFile);
+      CALL calculate(pyroNum);
 
    END LOOP;
 
-   CLOSE pyroFile;
-END
-$$
+   CLOSE pyroNums;
+END$$
 
 CREATE PROCEDURE getStats(IN pyro1 INT, IN pyro2 INT,
  OUT mean1 FLOAT, OUT mean2 FLOAT, OUT stdDev1 FLOAT, OUT stdDev2 FLOAT)
@@ -115,11 +95,15 @@ BEGIN
    SELECT mean, std_dev INTO mean2, stdDev2 FROM pyro_stats WHERE pyroID = pyro2;
 END$$
 
-CREATE FUNCTION pearsonMatch(pyro1 INT, pyro2 INT) 
+CREATE FUNCTION calcPearson(pyro1 INT, pyro2 INT) 
 RETURNS FLOAT
 READS SQL DATA
 BEGIN
-   DECLARE same_protocol INT DEFAULT 0;
+   DECLARE same_dispensation INT DEFAULT 0;
+   DECLARE same_fwPrimer INT DEFAULT 0;
+   DECLARE same_revPrimer INT DEFAULT 0;
+   DECLARE same_seqPrimer INT DEFAULT 0;
+
    DECLARE done INT DEFAULT 0;
    DECLARE sum FLOAT DEFAULT 0;
    DECLARE aVal, bVal FLOAT DEFAULT 0;
@@ -135,12 +119,15 @@ BEGIN
       ORDER BY a.position;
    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
-   SELECT a.protocol = b.protocol INTO same_protocol
+   SELECT a.dsName = b.dsName, a.forPrimer = b.forPrimer,
+          a.revPrimer = b.revPrimer, a.seqPrimer = b.seqPrimer
+   INTO same_dispensation, same_fwPrimer, same_revPrimer, same_seqPrimer
    FROM Pyroprints a, Pyroprints b
    WHERE a.pyroID = pyro1 AND b.pyroID = pyro2;
 
-   IF same_protocol = 0 THEN
-      RETURN -2;
+   IF same_dispensation = 0 OR same_fwPrimer = 0 OR
+      same_revPrimer = 0 OR same_seqPrimer = 0
+      THEN RETURN -2;
    END IF;
 
    CALL getStats(pyro1, pyro2, mean1, mean2, stdDev1, stdDev2);
@@ -163,5 +150,76 @@ BEGIN
 
    RETURN(rtn);
 END$$
+
+CREATE PROCEDURE computeAllSimilarities()
+BEGIN
+   DECLARE pyro1, pyro2 INT(11);
+   DECLARE pearsonCorr FLOAT;
+   DECLARE done INT DEFAULT 0;
+
+   DECLARE pyroPairs CURSOR FOR
+      SELECT a.pyroID, b.pyroID
+      FROM pyro_stats a, pyro_stats b
+      WHERE a.pyroID >= b.pyroID
+      ORDER BY a.pyroID asc;
+   DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+   OPEN pyroPairs;
+
+   correlateLoop: LOOP
+      FETCH pyroPairs into pyro1, pyro2;
+
+      IF done = 1 THEN
+         LEAVE correlateLoop;
+      END IF;
+
+      SET pearsonCorr = calcPearson(pyro1, pyro2);
+
+      REPLACE INTO pyro_similarities VALUES(pyro1, pyro2, pearsonCorr);
+   END LOOP;
+
+END$$
+
+CREATE PROCEDURE computeSimilarities()
+BEGIN
+   DECLARE pyro1, pyro2 INT(11);
+   DECLARE pearsonCorr FLOAT;
+
+   DECLARE pyroPairs CURSOR FOR
+      SELECT pyroID
+      FROM pyro_stats
+      ORDER BY pyroID asc;
+
+   SELECT max(pyroID) INTO pyro1
+   FROM pyro_stats;
+
+   OPEN pyroPairs;
+
+   correlateLoop: LOOP
+      FETCH pyroPairs INTO pyro2;
+
+      IF pyro1 = pyro2 THEN
+         REPLACE INTO pyro_similarities VALUES(pyro1, pyro2, 1);
+         LEAVE correlateLoop;
+      END IF;
+
+      SET pearsonCorr = calcPearson(pyro1, pyro2);
+
+      REPLACE INTO pyro_similarities VALUES(pyro1, pyro2, pearsonCorr);
+   END LOOP;
+
+END$$
+
+/*
+CREATE PROCEDURE peakCorrelations()
+BEGIN
+   DECLARE peakCorrelation FLOAT DEFAULT 0;
+
+   DECLARE pyroPairs CURSOR FOR
+      SELECT a.pyroID, b.pyroID
+      FROM Pyroprints a, Pyroprints b
+      WHERE a.pyroID != b.pyroID AND a.pyroID not in
+END$$
+*/
 
 DELIMITER ;
